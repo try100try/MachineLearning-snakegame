@@ -11,6 +11,8 @@ this.body=[];
 this.amountOfChomps=0;
 
 this.beforeChompCheck=[this.x,this.y];
+
+this.directionTemp;
     }
 
 display(){
@@ -39,11 +41,19 @@ this.beforeChompCheck[1]=this.y;
 movement(direction){
 //changes a variable into the given string, so it can continue to update
 if (direction!=undefined){
-this.constantDirection=direction;
+this.directionTemp=direction;
 }
 //times the whole event so it doesnt do it every frame
 if (this.timer>10){
-
+    if (this.directionTemp!=undefined){
+        if (this.constantDirection==undefined ||
+        this.constantDirection=="left" && this.directionTemp!="right" || 
+        this.constantDirection=="right" && this.directionTemp!="left"||
+        this.constantDirection=="up" && this.directionTemp!="down" ||
+        this.constantDirection=="down" && this.directionTemp!="up" ||
+        this.constantDirection=="stop"){
+        this.constantDirection=this.directionTemp;}
+        }
 //this adds the body to the snake.
 if (this.amountOfChomps==this.body.length/2){
 colorChange(this.body[0], this.body[1],"background");
@@ -57,11 +67,17 @@ colorChange(this.body[0], this.body[1],"background");
 
 
 if (this.constantDirection=="left"){
-this.x--;
-} else if (this.constantDirection=="up"){
-this.y--;} else if (this.constantDirection=="down"){
-this.y++;} else if (this.constantDirection=="right"){
-this.x++;}
+    this.x--;
+}
+if (this.constantDirection=="up"){
+this.y--;
+}
+if (this.constantDirection=="down"){
+this.y++;
+}
+if (this.constantDirection=="right"){
+this.x++;
+}
 this.timer=0;
 }else {
 this.timer++;
@@ -96,6 +112,16 @@ fed(){
 this.amountOfChomps++;
 }
 
+leDeath(){
+for (let index = 0; index < this.body.length; index+=2) {
+
+if (this.x==this.body[index] && this.y==this.body[index+1]){
+
+console.log("pogchamp le epic deatherino");
+}
+
+}
+}
 
 }
 

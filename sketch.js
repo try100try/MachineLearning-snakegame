@@ -3,11 +3,17 @@ var column = 20;
 
 let backgroundGrid=[];
 
+var score;
+var tempScore;
+var distScoreX=0;
+var distScoreY=0;
+
 function setup(){
 
     createCanvas(500,500);
 //makes the squares focuspoint in the middle.
 rectMode(CENTER);
+strokeWeight(1);
 //initialisation of sneko
 snake = new snake();
 
@@ -17,20 +23,19 @@ NAMNAM = new food();
 
 
 var shouldRun;
+
 function draw(){
 
 
+//abs makes the number positive if it's negative
+//round takes the number and rounds it up or down depending on the digits
+
+distScoreX = abs(abs((snake.x-NAMNAM.x)/row)-1);
+distScoreY = abs(abs((snake.y-NAMNAM.y)/column)-1);
+tempScore = distScoreX*2.5+distScoreY*2.5;
+//console.log("X:"+distScoreX+"  Y:"+distScoreY+"  tempScore:"+tempScore);
 
 
-
-
-
-
-//Snake display function to show the sneko.
-
-
-//make them lil' recthomies transparent so the background will show
-fill(0,0,0,1);
 //make column
 for (let downie = 0; downie < column; downie++) {
 //fill the rest of the spots with columns
@@ -49,7 +54,9 @@ for (let rightie = 0; rightie < row; rightie++) {
 NAMNAM.display();
 //shows the snake as a green color
 snake.display();
-//allows movement for the snake but with a delay
+//sadly makes the sneko able to die :(
+    snake.leDeath();
+//allows movement for the snake but with a set delay
 snake.movement();
 
 //downie,rightie,rightie*width/row+(width/row)/2,downie*height/column+(height/column)/2,width/row,height/column
@@ -92,6 +99,11 @@ if (situation=="food"){
         if (backgroundGrid[index].posy==y && backgroundGrid[index].posx==x){
         backgroundGrid[index].changeColour(200,200,200);
         }}
+        
+        if (situation=="blue"){
+            if (backgroundGrid[index].posy==y && backgroundGrid[index].posx==x){
+                backgroundGrid[index].changeColour(0,0,255);
+                }}
 
 
 
@@ -115,6 +127,10 @@ if (keyCode == DOWN_ARROW || keyCode == 83){
 
         if (keyCode == UP_ARROW || keyCode == 87){
             snake.movement("up");
+            }
+            
+            if (keyCode == 32){
+            snake.movement('stop');
             }
 }
 
