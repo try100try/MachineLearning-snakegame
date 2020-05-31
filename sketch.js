@@ -3,14 +3,26 @@ var column = 20;
 
 let backgroundGrid=[];
 
-var score;
-var tempScore;
+var victory=false;
+
+var fitness;
+var distanceForFitness;
 var distScoreX=0;
 var distScoreY=0;
+//victoryscreen with flashing random colours;
+var randomColour;
+
+//neural netværk kode.
+let savedSneks=[];
+
+const population=1;
+
+
 
 function setup(){
 
     createCanvas(500,500);
+UI();
 //makes the squares focuspoint in the middle.
 rectMode(CENTER);
 strokeWeight(1);
@@ -19,22 +31,27 @@ snake = new snake();
 
 NAMNAM = new food();
 
+
+
 }
 
 
-var shouldRun;
-
 function draw(){
 
-
+UIConstant();
 //abs makes the number positive if it's negative
 //round takes the number and rounds it up or down depending on the digits
 
 distScoreX = abs(abs((snake.x-NAMNAM.x)/row)-1);
 distScoreY = abs(abs((snake.y-NAMNAM.y)/column)-1);
-tempScore = distScoreX*2.5+distScoreY*2.5;
-//console.log("X:"+distScoreX+"  Y:"+distScoreY+"  tempScore:"+tempScore);
+distanceForFitness = distScoreX*2.5+distScoreY*2.5;
+if (snake.amountOfChomps==row*column){
+fitness=125;
+} else {
+fitness = (snake.amountOfChomps/(row*column)*100)+distanceForFitness;
+}
 
+//console.log(fitness);
 
 //make column
 for (let downie = 0; downie < column; downie++) {
@@ -67,6 +84,14 @@ NAMNAM= new food();
 snake.fed();
 }
 
+snake.think(NAMNAM.x,NAMNAM.y);
+
+if (snake.amountOfChomps >= row*column){
+youWon();
+}
+
+
+
 }
 var shouldThisRun=true;
 
@@ -75,12 +100,11 @@ function colorChange(x,y,situation){
     for (let index = 0; index < backgroundGrid.length; index++) {
 if (shouldThisRun){
     backgroundGrid[index].display();
-    console.log(backgroundGrid.length,index);
     if (index==backgroundGrid.length-1){
     shouldThisRun=false;
     }
 }
-
+if (victory==false){
 if (situation=="food"){
         if (backgroundGrid[index].posy==y && backgroundGrid[index].posx==x){
         backgroundGrid[index].changeColour(255,0,0);
@@ -104,6 +128,27 @@ if (situation=="food"){
             if (backgroundGrid[index].posy==y && backgroundGrid[index].posx==x){
                 backgroundGrid[index].changeColour(0,0,255);
                 }}
+            }
+        if (situation=="victory"){
+            if (backgroundGrid[index].posy==y && backgroundGrid[index].posx==x){
+                
+                randomColour=floor(random(0,5));
+                if (randomColour==0){
+                backgroundGrid[index].changeColour(255,0,0);}
+
+                if (randomColour==1){
+                backgroundGrid[index].changeColour(0,255,0);}
+                
+                if (randomColour==2){
+                    backgroundGrid[index].changeColour(0,0,255);}
+
+                if (randomColour==3){
+                backgroundGrid[index].changeColour(255,255,255);}
+
+                if (randomColour==4){
+                backgroundGrid[index].changeColour(0,0,0);}
+                }}
+        
 
 
 
@@ -113,27 +158,42 @@ if (situation=="food"){
 function keyPressed(){
 //and the keyCode is a reader that reads which key is pressed
 //and the numbers are given by keycode.info
-if (keyCode == LEFT_ARROW || keyCode == 65){
+//also disables movement at victory
+if (victory==false){
+if (keyCode == LEFT_ARROW || keyCode == 65 || snake.left){
 snake.movement("left");
 }
 
-if (keyCode == DOWN_ARROW || keyCode == 83){
+if (keyCode == DOWN_ARROW || keyCode == 83 || snake.down){
     snake.movement("down");
     }
 
-    if (keyCode == RIGHT_ARROW || keyCode == 68){
+    if (keyCode == RIGHT_ARROW || keyCode == 68 || snake.right){
         snake.movement("right");
         }
 
-        if (keyCode == UP_ARROW || keyCode == 87){
+        if (keyCode == UP_ARROW || keyCode == 87 || snake.up){
             snake.movement("up");
             }
             
             if (keyCode == 32){
             snake.movement('stop');
-            }
+            }}
 }
 
+function youWon(){
+victory=true;
+
+colorChange(floor(random(0,row)),floor(random(0,column)),"victory");
+
+}
+
+function nextGeneration() {
+snake.fitness = fitness;
+
+
+
+}
 
 
 /*Til viderarbejde:
